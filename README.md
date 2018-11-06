@@ -1,4 +1,4 @@
-# chrome_fame
+# chrome_game
 
 ## Project setup
 ```

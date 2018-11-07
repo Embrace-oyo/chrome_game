@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>chorme_game</title>
+</head>
+<body>
+	<canvas id="canvas" style="margin: 0 auto;display: block;border: 1px solid #ccc;"></canvas>
+	<div style="display: none">
+		<img src="./assets/sprite.png" alt="" id="sprite">
+		<img src="./assets/2x@sprite.png" alt="" id="2x@sprite">
+	</div>
+	<script src="./js/bgMgr.js"></script>
+	<script>
+		window.onload = function () {
+			const HORIZON = {x: 2, y: 54}
+			var h = new HorizonLine(HORIZON);
+			var startTime = 0;
+			(function draw(time) {
+				h.ctx.clearRect(0,0,800,600);
+				time = time || 0;
+				h.update(time - startTime,3);
+				startTime = time;
+				window.requestAnimationFrame(draw);
+			})();
+		};
+	</script>
+</body>
+</html>

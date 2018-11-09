@@ -5,25 +5,48 @@
 	<title>chorme_game</title>
 </head>
 <body>
-	<canvas id="canvas" style="margin: 0 auto;display: block;border: 1px solid #ccc;"></canvas>
+	<div class="game-body" id="a" style="background: #fff;">
+		<canvas id="canvas" style="margin: 0 auto;display: block;border: 1px solid #ccc;margin-top: 200px;"></canvas>
+	</div>
 	<div style="display: none">
 		<img src="./assets/sprite.png" alt="" id="sprite">
 		<img src="./assets/2x@sprite.png" alt="" id="2x@sprite">
 	</div>
-	<script src="./js/bgMgr.js"></script>
+	<script src="js/utils.js"></script>
+	<script src="js/HorizonLine.js"></script>
+	<script src="js/Cloud.js"></script>
+	<script src="js/NightMode.js"></script>
 	<script>
 		window.onload = function () {
 			const HORIZON = {x: 2, y: 54}
-			var h = new HorizonLine(HORIZON);
+			var H = new HorizonLine(HORIZON);
+			var C = new Cloud(spriteDefinition.CLOUD);
+			var N = new NightMode(spriteDefinition.MOON);
 			var startTime = 0;
+			var deltaTime;
 			(function draw(time) {
-				h.ctx.clearRect(0,0,800,600);
+				H.ctx.clearRect(0,0,600,150);
 				time = time || 0;
-				h.update(time - startTime,3);
+				deltaTime = time - startTime;
+				//H.update(deltaTime, 3);
+				//C.updateClouds(0.2);
+				N.init()
 				startTime = time;
 				window.requestAnimationFrame(draw);
 			})();
 		};
 	</script>
+
+	<style>
+		 .game-body{
+	     transition:filter 1.5s cubic-bezier(0.65, 0.05, 0.36, 1), background-color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+	     /*告诉浏览器即将对某元素执行什么动画，这样浏览器可以提前进行准备来优化动画效果，使动画更为流畅*/
+	     will-change: filter,background-color;
+		 }
+		  .inverted{
+			  filter: invert(100%); /*反色*/
+        background-color: #000; /*改变背景为黑色(入夜效果)*/
+	    }
+	</style>
 </body>
 </html>

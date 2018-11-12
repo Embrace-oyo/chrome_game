@@ -20,10 +20,10 @@
 	<script src="js/Obstacle.js"></script>
 	<script>
 		window.onload = function () {
-			const HORIZON = {x: 2, y: 54}
 			var H = new HorizonLine(HORIZON);
 			var C = new Cloud(spriteDefinition.CLOUD);
 			var N = new NightMode(spriteDefinition.MOON);
+			var O = new Obstacle(spriteDefinition.CACTUS_LARGE);
 			var startTime = 0;
 			var num = 0;
 			var t = 0
@@ -38,9 +38,10 @@
 				time = time || 0;
 				deltaTime = time - startTime;
 				if(t !== 0 && t % 10 === 0){NIGHT_START = true}
-				H.update(deltaTime, 3);
-				C.updateClouds(0.2);
-				N.invert(deltaTime);
+				//H.update(deltaTime, 3);
+				//C.updateClouds(0.2);
+				//N.invert(deltaTime);
+				O.updateObstacles(deltaTime, speed)
 				startTime = time;
 				window.requestAnimationFrame(draw);
 			})();

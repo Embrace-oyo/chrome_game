@@ -41,15 +41,96 @@ function NightMode( spritePos ) {
 NightMode.prototype = {
 	init: function () {
 		var round = Math.round(this.containerWidth / NightMode.config.NUM_STARS);
-		console.log(round)
-		for(let i = 0; i < NightMode.config.NUM_STARS.length; i++){
-			this.config.NUM_STARS[i] = {}
+		for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
+			this.stars[i] = {}
 			// 随机x坐标
-			this.config.NUM_STARS[i].x = getRandomNum(round * i, round * (i + 1));
+			this.stars[i].x = getRandomNum(round * i, round * (i + 1));
 			// 随机y坐标
-			this.config.NUM_STARS[i].y = getRandomNum(0, NightMode.config.STAR_MAX_Y);
+			this.stars[i].y = getRandomNum(0, NightMode.config.STAR_MAX_Y);
 			this.stars[i].sourceY = spriteDefinition.STAR.y + NightMode.config.STAR_SIZE * i;
 		}
+	},
+	invert: function (deltaTime) {
+		if(NIGHT_START === false){
+			return
+		}
+		// 黑夜持续时间 5秒
+		if(NightMode.invertTimer >= NightMode.INVERT_FADE_DURATION){ // 大于5秒 重置
+			NightMode.invertTimer = 0;
+			NightMode.invertTrigger = false;
+			NightMode.inverted = A.classList.toggle('inverted',NightMode.invertTrigger);
+			NIGHT_START = false
+		}else if(NightMode.invertTimer < NightMode.INVERT_FADE_DURATION && NightMode.invertTimer > 0){ // 小于5秒 继续执行
+			NightMode.invertTimer += deltaTime;
+		}else{ // 黑夜初始化
+			NightMode.invertTrigger = true
+			NightMode.inverted = A.classList.toggle('inverted',NightMode.invertTrigger);
+			NightMode.invertTimer += deltaTime;
+		}
+		this.update(NightMode.inverted);
+	},
+	update: function (activated) {
+		// 🌙月亮周期更新
+		if (activated === true && this.opacity === 0) {
+			this.currentPhase++;
+			if (this.currentPhase >= NightMode.phases.length) {
+				this.currentPhase = 0;
+			}
+		}
+		// 淡入
+		if (activated === true && (this.opacity < 1 || this.opacity === 0)) {
+			this.opacity += NightMode.config.FADE_SPEED;
+		}else if(this.opacity > 0){ //淡出
+			this.opacity -= NightMode.config.FADE_SPEED;
+		}
+
+		//当opacity大于0时移动月亮位置
+		if(this.opacity > 0){
+			this.xPos = this.updateXPos(this.xPos, NightMode.config.MOON_SPEED);
+			// 移动星星
+			if(this.drawStars === true){
+				for (var i = 0; i < NightMode.config.NUM_STARS; i++){
+					this.stars[i].x = this.updateXPos(this.stars[i].x, NightMode.config.STAR_SPEED);
+				}
+				this.draw();
+			}else{
+				this.opacity = 0;
+				this.init();
+			}
+			this.drawStars = true;
+		}
+	},
+	updateXPos: function (currentPos, speed){
+		// 判断物体 是否出了边界
+		if (currentPos < -NightMode.config.WIDTH){
+			// 返回右侧
+			currentPos = this.containerWidth;
+		}else{
+			currentPos -= speed;
+		}
+		return currentPos;
+	},
+	draw: function () {
+		//周期为3时画满月
+		var moonSourceWidth = this.currentPhase == 3 ? NightMode.config.WIDTH * 2 : NightMode.config.WIDTH;
+		var moonSourceHeight = NightMode.config.HEIGHT;
+		//从雪碧图上获取月亮正确的形状
+		var moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase];
+		var moonOutputWidth = moonSourceWidth;
+		var starSize = NightMode.config.STAR_SIZE;
+		var starSourceX = spriteDefinition.STAR.x;
+		this.ctx.save();
+		this.ctx.globalAlpha = this.opacity;
+		if(this.drawStars === true){
+			for (var i = 0; i < NightMode.config.NUM_STARS; i++) {
+				this.ctx.drawImage(this.img, starSourceX, this.stars[i].sourceY, starSize, starSize, Math.round(this.stars[i].x), this.stars[i].y, NightMode.config.STAR_SIZE, NightMode.config.STAR_SIZE);
+			}
+		}
+		this.ctx.drawImage(this.img, moonSourceX, this.spritePos.y, moonSourceWidth, moonSourceHeight, Math.round(this.xPos), this.yPos, moonOutputWidth, NightMode.config.HEIGHT)
+		this.ctx.restore()
 	}
+
+
+
 }
 

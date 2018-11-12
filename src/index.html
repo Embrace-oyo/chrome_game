@@ -12,10 +12,12 @@
 		<img src="./assets/sprite.png" alt="" id="sprite">
 		<img src="./assets/2x@sprite.png" alt="" id="2x@sprite">
 	</div>
+	<script src="js/config.js"></script>
 	<script src="js/utils.js"></script>
 	<script src="js/HorizonLine.js"></script>
 	<script src="js/Cloud.js"></script>
 	<script src="js/NightMode.js"></script>
+	<script src="js/Obstacle.js"></script>
 	<script>
 		window.onload = function () {
 			const HORIZON = {x: 2, y: 54}
@@ -23,14 +25,22 @@
 			var C = new Cloud(spriteDefinition.CLOUD);
 			var N = new NightMode(spriteDefinition.MOON);
 			var startTime = 0;
+			var num = 0;
+			var t = 0
 			var deltaTime;
 			(function draw(time) {
+				num++
+				if(num === 60){
+					num = 0
+					t++
+				}
 				H.ctx.clearRect(0,0,600,150);
 				time = time || 0;
 				deltaTime = time - startTime;
-				//H.update(deltaTime, 3);
-				//C.updateClouds(0.2);
-				N.init()
+				if(t !== 0 && t % 10 === 0){NIGHT_START = true}
+				H.update(deltaTime, 3);
+				C.updateClouds(0.2);
+				N.invert(deltaTime);
 				startTime = time;
 				window.requestAnimationFrame(draw);
 			})();

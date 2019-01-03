@@ -1,54 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<meta charset="UTF-8">
 	<title>chorme_game</title>
 </head>
 <body>
-	<div class="game-body" id="a" style="background: #fff;">
-		<canvas id="canvas" style="margin: 0 auto;display: block;border: 1px solid #ccc;margin-top: 200px;"></canvas>
-	</div>
+	<div class="game-body" id="a" style="background: #fff;"></div>
 	<div style="display: none">
 		<img src="./assets/sprite.png" alt="" id="sprite">
 		<img src="./assets/2x@sprite.png" alt="" id="2x@sprite">
 	</div>
-	<script src="js/config.js"></script>
-	<script src="js/utils.js"></script>
-	<script src="js/HorizonLine.js"></script>
-	<script src="js/Cloud.js"></script>
-	<script src="js/NightMode.js"></script>
-	<script src="js/Obstacle.js"></script>
+	<script src="./js/config.js"></script>
+	<script src="./newJs/H.js"></script>
+	<script src="./newJs/C.js"></script>
+	<script src="./newJs/N.js"></script>
 	<script>
-		window.onload = function () {
-			var H = new HorizonLine(HORIZON);
-			var C = new Cloud(spriteDefinition.CLOUD);
-			var N = new NightMode(spriteDefinition.MOON);
-			var O = new Obstacle(spriteDefinition.CACTUS_LARGE);
-			var startTime = 0;
-			var num = 0;
-			var t = 0
-			var deltaTime;
-			(function draw(time) {
-				num++
-				if(num === 60){
-					num = 0
-					t++
-				}
-				H.ctx.clearRect(0,0,600,150);
-				time = time || 0;
-				deltaTime = time - startTime;
-				if(t !== 0 && t % 10 === 0){NIGHT_START = true}
-				//H.update(deltaTime, 3);
-				//C.updateClouds(0.2);
-				//N.invert(deltaTime);
-				O.init(deltaTime, speed)
-				startTime = time;
-				window.requestAnimationFrame(draw);
-			})();
-		};
+		let h = new HorizonLine();
+		let n = new NightMode();
+		(function draw(time){
+			context.clearRect(0,0,width,height);
+			h.draw();
+			clouds.map((x) => {x.draw();});
+			n.draw(time);
+			window.requestAnimationFrame(function(time){draw(time)});
+		})();
+
 	</script>
 
 	<style>
+		html,body{
+			margin: 0;
+			padding: 0;
+		}
 		 .game-body{
 	     transition:filter 1.5s cubic-bezier(0.65, 0.05, 0.36, 1), background-color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
 	     /*告诉浏览器即将对某元素执行什么动画，这样浏览器可以提前进行准备来优化动画效果，使动画更为流畅*/
